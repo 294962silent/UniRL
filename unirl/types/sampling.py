@@ -181,6 +181,14 @@ class DiffusionSamplingParams(BaseSamplingParams):
             outside = [i for i in self.sde_indices if i < 0 or i >= steps]
             if outside:
                 raise ValueError(f"{name} {outside} outside the {steps}-step schedule [0, {steps - 1}].")
+        if self.scheduler is not None and self.scheduler.num_timesteps > self.num_inference_steps:
+            # A scheduler may gate only a prefix of the schedule (num_timesteps < steps), but it can never
+            # reach past it; beyond that every index it returns is dropped by the engines' membership gate.
+            raise ValueError(
+                f"{cls}.scheduler.num_timesteps={self.scheduler.num_timesteps} exceeds "
+                f"{cls}.num_inference_steps={self.num_inference_steps}; the scheduler can gate at most "
+                f"the {self.num_inference_steps}-step schedule."
+            )
         reserved = {f.name for f in fields(self) if f.name != "sampler_kwargs"}
         shadowed = reserved & set(self.sampler_kwargs)
         require(
