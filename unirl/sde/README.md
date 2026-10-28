@@ -126,6 +126,14 @@ MixGRPO keeps `FlowSDEStrategy` and adds a `WindowScheduler` under
 - **`WindowScheduler` indexes the denoising loop.** `num_timesteps` is the full step count
   and only full windows are visited. MixGRPO's `max_timesteps = sampling_steps - 2` indexes
   that repo's sample dict, a different coordinate space.
+- **`WindowScheduler` rejects geometry whose window would run past `num_timesteps`**, with a
+  different bound per strategy. The sweep strategies (`progressive`, `decay`, `exp_decay`)
+  start their last window at `num_timesteps - window_size` and begin at `init_timestep`, so
+  they need `num_timesteps - window_size >= init_timestep`. `random` never reads
+  `init_timestep` — `_resolve_random` samples its start from `[0, num_timesteps - window_size]`
+  — so only `window_size <= num_timesteps` applies there and a large `init_timestep` is
+  harmless. `all` builds no window and is exempt. Out-of-range steps would otherwise be
+  dropped by the engines' membership gate, silently turning the rollout into ODE.
 - **`exp_decay_threshold` defaults to 13.** Decay starts only once a window start passes it.
   Shipped mixgrpo schedules are shorter, so `strategy=exp_decay` stays at `iters_per_window`
   until the threshold is lowered.

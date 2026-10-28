@@ -139,6 +139,26 @@ class WindowScheduler(TimestepScheduler):
                 f"Bad strategy configuration for WindowScheduler: {self.config.strategy}. "
                 f"Available options: {set(self.WINDOW_STRATEGY_TO_METHOD_NAME.keys())}"
             )
+        if self.config.strategy != "all":
+            # Per-strategy bounds; see the README Gotcha on window geometry.
+            window = self.config.window_size
+            if self.config.strategy == "random":
+                if window > num_timesteps:
+                    raise ValueError(
+                        f"WindowScheduler(random) draws a window of window_size steps inside the "
+                        f"num_timesteps schedule, so window_size must not exceed num_timesteps; "
+                        f"got num_timesteps={num_timesteps}, window_size={window}. "
+                        f"Lower window_size or raise num_inference_steps."
+                    )
+            elif num_timesteps - window < self.config.init_timestep:
+                raise ValueError(
+                    f"WindowScheduler({self.config.strategy}) starts its last window at "
+                    f"num_timesteps - window_size and runs window_size steps from there, but that "
+                    f"start is before init_timestep, so the window would run past the end of the "
+                    f"num_timesteps schedule (num_timesteps={num_timesteps}, window_size={window}, "
+                    f"init_timestep={self.config.init_timestep}). Lower init_timestep or window_size, "
+                    f"or raise num_inference_steps."
+                )
 
     def get_sde_indices(self, step: Optional[int] = None) -> Set[int]:
         if self.config.strategy == "all":
