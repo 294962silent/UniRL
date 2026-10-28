@@ -175,8 +175,8 @@ class DiffusionSamplingParams(BaseSamplingParams):
             self.sde_indices = [
                 _coerce_type(item, int, f"{name}[{index}]") for index, item in enumerate(self.sde_indices)
             ]
-            # An index outside the schedule is either dropped (engines that gate on membership, so SDE
-            # silently never fires) or trips a range check only once the rollout is already running.
+            # Indices address the transitions of the num_inference_steps schedule, so they live in
+            # [0, num_inference_steps); membership-gated engines drop anything else without a word.
             steps = self.num_inference_steps
             outside = [i for i in self.sde_indices if i < 0 or i >= steps]
             if outside:
