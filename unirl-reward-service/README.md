@@ -228,13 +228,17 @@ Other endpoints:
 
 This vendored sub-project ships no test tree, so `pytest` collects nothing and exits 5
 (`scripts/` is excluded in `pyproject.toml` because those are runnable CLIs, not tests).
-Validate an instance end-to-end with the smoke scripts instead (from this directory,
-with the package installed as above, or prefix `PYTHONPATH=.`):
+Validate a running instance with the smoke scripts instead (from this directory, with
+the package installed as above, or prefix `PYTHONPATH=.`). Each needs a real input file:
+no sample asset is bundled, so pass `--image` / `--video` explicitly.
 
 ```bash
-python3 scripts/videoalign_smoke.py --url http://localhost:8090   # single-video + batch + latency
-python3 scripts/smoke_client.py --url http://localhost:8090       # minimal client round-trip
-python3 scripts/bench_concurrent.py --url http://localhost:8090   # load / latency distribution
+# Video: single-video, batch, video_path modes, then latency
+python3 scripts/videoalign_smoke.py --url http://localhost:8090 --video /path/to/clip.mp4
+# Text/image round-trip against /health, /rewards and /score
+python3 scripts/smoke_client.py --url http://localhost:8090 --image /path/to/frame.jpg
+# Load and latency distribution (needs --concurrency or --sweep)
+python3 scripts/bench_concurrent.py --url http://localhost:8090 --concurrency 200 --image /path/to/frame.jpg
 ```
 
 ## Venv check
