@@ -5,19 +5,19 @@ Includes health checks, single-video, batch, video_path modes, and latency measu
 
 Usage:
     # Use sample videos from the VideoAlign repository (auto-detected)
-    python3 scripts/test_videoalign.py
+    python3 scripts/videoalign_smoke.py
 
     # Specify the service URL
-    python3 scripts/test_videoalign.py --url http://localhost:8090
+    python3 scripts/videoalign_smoke.py --url http://localhost:8090
 
     # Specify video files
-    python3 scripts/test_videoalign.py --video /path/to/video.mp4
+    python3 scripts/videoalign_smoke.py --video /path/to/video.mp4
 
     # Run functional validation only, skipping the benchmark
-    python3 scripts/test_videoalign.py --no-bench
+    python3 scripts/videoalign_smoke.py --no-bench
 
     # Run the full benchmark with multiple batch sizes
-    python3 scripts/test_videoalign.py --bench-full
+    python3 scripts/videoalign_smoke.py --bench-full
 """
 
 from __future__ import annotations

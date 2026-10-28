@@ -48,7 +48,7 @@ doesn't have. Vendoring the inference subset under
 2. Diff the relevant upstream files against this directory.
 3. Reapply only the **inference-relevant** changes; ignore changes that
    touch the trainer / data collator / dataset converters.
-4. Run `pytest tests/scorers/test_videoalign.py` and the GPU smoke test
+4. Run `python3 scripts/videoalign_smoke.py` and the GPU smoke test
    to verify nothing in the inference path regressed.
 
 ## Why no `pdb` imports

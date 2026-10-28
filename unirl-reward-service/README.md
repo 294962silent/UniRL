@@ -226,10 +226,15 @@ Other endpoints:
 
 ## Tests
 
+This vendored sub-project ships no test tree, so `pytest` collects nothing and exits 5
+(`scripts/` is excluded in `pyproject.toml` because those are runnable CLIs, not tests).
+Validate an instance end-to-end with the smoke scripts instead (from this directory,
+with the package installed as above, or prefix `PYTHONPATH=.`):
+
 ```bash
-pytest -m "not gpu and not slow and not integration"   # CPU-only unit tests
-pytest tests/integration/ -m integration -v            # venv-install integration tests (need Ray + network)
-pytest                                                 # full suite (needs GPU)
+python3 scripts/videoalign_smoke.py --url http://localhost:8090   # single-video + batch + latency
+python3 scripts/smoke_client.py --url http://localhost:8090       # minimal client round-trip
+python3 scripts/bench_concurrent.py --url http://localhost:8090   # load / latency distribution
 ```
 
 ## Venv check

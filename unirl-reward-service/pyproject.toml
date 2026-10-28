@@ -52,7 +52,11 @@ where = ["."]
 include = ["reward_service*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# No test tree ships in this vendored sub-project, so an empty collection is not
+# an error. scripts/ holds runnable smoke/benchmark CLIs whose module names start
+# with test_ but import live-service deps; collecting them aborted every pytest
+# run during collection.
+norecursedirs = ["scripts", "envs", "datasets", "docs", "configs"]
 markers = [
     "gpu: requires a CUDA GPU to run",
     "slow: takes more than a few seconds; skipped in quick CI",

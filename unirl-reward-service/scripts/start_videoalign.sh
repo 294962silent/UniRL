@@ -139,7 +139,7 @@ else
     echo "查看日志:    tail -f $LOG_FILE"
     echo "停止服务:    bash scripts/stop_videoalign.sh"
     echo "健康检查:    curl http://localhost:${PORT}/health"
-    echo "运行测试:    python3 scripts/test_videoalign.py --url http://localhost:${PORT}"
+    echo "运行测试:    python3 scripts/videoalign_smoke.py --url http://localhost:${PORT}"
     echo ""
     echo "[INFO] 首次启动需等待 Ray venv 安装 + 模型下载（~10-30 分钟）。"
     echo "       执行 tail -f $LOG_FILE 观察进度。"
