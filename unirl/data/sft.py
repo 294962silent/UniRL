@@ -98,8 +98,13 @@ def normalize_supervised_example(
             f"Supervised manifests must be raw-data-first and may not include legacy embedding fields: {legacy}."
         )
 
+    sample_id = item.get("sample_id")
+    if sample_id is None:
+        sample_id = item.get("prompt_id")
+    if sample_id is None:
+        sample_id = default_sample_id
     record: Dict[str, Any] = {
-        "sample_id": str(item.get("sample_id", item.get("prompt_id", default_sample_id))),
+        "sample_id": str(sample_id),
     }
     messages = item.get("messages")
     if messages is not None:
