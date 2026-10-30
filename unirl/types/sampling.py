@@ -135,6 +135,10 @@ class DiffusionSamplingParams(BaseSamplingParams):
         super().__post_init__()
         cls = type(self).__name__
         self.num_inference_steps = _coerce_type(self.num_inference_steps, int, f"{cls}.num_inference_steps")
+        require(
+            self.num_inference_steps >= 1,
+            f"{cls}.num_inference_steps must be >= 1, got {self.num_inference_steps}",
+        )
         self.guidance_scale = _coerce_type(self.guidance_scale, float, f"{cls}.guidance_scale")
         self.height = _coerce_type(self.height, int, f"{cls}.height")
         self.width = _coerce_type(self.width, int, f"{cls}.width")
@@ -181,7 +185,7 @@ class DiffusionSamplingParams(BaseSamplingParams):
             outside = [i for i in self.sde_indices if i < 0 or i >= steps]
             if outside:
                 raise ValueError(f"{name} {outside} outside the {steps}-step schedule [0, {steps - 1}].")
-        if self.scheduler is not None and self.scheduler.num_timesteps > self.num_inference_steps:
+        elif self.scheduler is not None and self.scheduler.num_timesteps > self.num_inference_steps:
             # A scheduler may gate only a prefix of the schedule (num_timesteps < steps), but it can never
             # reach past it; beyond that every index it returns is dropped by the engines' membership gate.
             raise ValueError(
