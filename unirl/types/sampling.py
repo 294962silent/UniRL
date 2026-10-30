@@ -63,6 +63,10 @@ class BaseSamplingParams(ABC):
     def __post_init__(self) -> None:
         cls = type(self).__name__
         self.samples_per_prompt = _coerce_type(self.samples_per_prompt, int, f"{cls}.samples_per_prompt")
+        require(
+            self.samples_per_prompt >= 1,
+            f"{cls}.samples_per_prompt must be >= 1, got {self.samples_per_prompt}",
+        )
 
 
 def _is_param_dict(sampling: Any) -> bool:
@@ -147,6 +151,10 @@ class DiffusionSamplingParams(BaseSamplingParams):
         self.init_same_noise = _coerce_type(self.init_same_noise, bool, f"{cls}.init_same_noise")
         self.disable_driver_xt = _coerce_type(self.disable_driver_xt, bool, f"{cls}.disable_driver_xt")
         self.eta = _coerce_type(self.eta, float, f"{cls}.eta")
+        require(
+            self.eta >= 0,
+            f"{cls}.eta must be >= 0, got {self.eta}",
+        )
         self.max_sequence_length = _coerce_type(self.max_sequence_length, int, f"{cls}.max_sequence_length", True)
         self.taylor_cache_interval = _coerce_type(
             self.taylor_cache_interval,
@@ -227,7 +235,16 @@ class ARSamplingParams(BaseSamplingParams):
         super().__post_init__()
         cls = type(self).__name__
         self.temperature = _coerce_type(self.temperature, float, f"{cls}.temperature")
+        # 0 is legal greedy; a negative temperature has no distribution meaning.
+        require(
+            self.temperature >= 0,
+            f"{cls}.temperature must be >= 0, got {self.temperature}",
+        )
         self.max_new_tokens = _coerce_type(self.max_new_tokens, int, f"{cls}.max_new_tokens")
+        require(
+            self.max_new_tokens >= 1,
+            f"{cls}.max_new_tokens must be >= 1, got {self.max_new_tokens}",
+        )
         self.top_p = _coerce_type(self.top_p, float, f"{cls}.top_p")
         self.top_k = _coerce_type(self.top_k, int, f"{cls}.top_k")
         self.stop_token_id = _coerce_type(self.stop_token_id, int, f"{cls}.stop_token_id", True)
